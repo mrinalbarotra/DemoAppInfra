@@ -32,13 +32,18 @@ stages:
             clean: true
           - script: |
               if [ "${{ parameters.environment }}" = "Dev" ]; then
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]Dev"
-                echo "##vso[task.setvariable variable=TFVARS_PATH]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Dev/terraform.tfvars"
+                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/Dev"
+                echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Dev/terraform.tfvars"
               else
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]Prod"
-                echo "##vso[task.setvariable variable=TFVARS_PATH]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Prod/terraform.tfvars"
+                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/Prod"
+                echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Prod/terraform.tfvars"
               fi
-            displayName: "Select environment folder and its corresponding terraform.tfvars from local computer"
+            displayName: "As per the selected environment setting agents working directory and path of terraform.tfvars"
+          - script: |
+              echo "Copying terraform.tfvars to working directory"
+              cp $(TFVARS_SOURCE) $(TF_WORKING_DIR)/terraform.tfvars
+              ls -l $(TF_WORKING_DIR)
+            displayName: "Copy terraform.tfvars into agents working directory"
           - script: |
               cd $(TF_WORKING_DIR)
               terraform init
