@@ -32,10 +32,10 @@ stages:
             clean: true
           - script: |
               if [ "${{ parameters.environment }}" = "Dev" ]; then
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/Dev"
+                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)"
                 echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Dev/terraform.tfvars"
               else
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/Prod"
+                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)"
                 echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Prod/terraform.tfvars"
               fi
             displayName: "As per the selected environment setting agents working directory and path of terraform.tfvars"
