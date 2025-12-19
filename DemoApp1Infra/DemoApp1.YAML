@@ -57,11 +57,11 @@ stages:
           - script: |
               cd $(TF_WORKING_DIR)
               terraform plan \
-                -var-file="$(TFVARS_PATH)" \
+                -var-file="$TFVARS_PATH" \
                 -out=tfplan
           - script: |
               cd $(TF_WORKING_DIR)
               terraform apply \
-                -var-file="$(TFVARS_PATH)" \
+                -var-file="$TFVARS_PATH" \
                 --auto-approve
             displayName: "Terraform Apply"
