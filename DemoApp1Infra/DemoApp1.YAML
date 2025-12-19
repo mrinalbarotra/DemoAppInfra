@@ -13,7 +13,7 @@ parameters:
       - Prod
 
 pool:
-  name: "Azure Pipelines"
+  name: default
 
 variables:
   TF_IN_AUTOMATION: "true"
