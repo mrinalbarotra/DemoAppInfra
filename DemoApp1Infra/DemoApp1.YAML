@@ -39,26 +39,26 @@ stages:
             displayName: "Terraform Init"
 
           - script: |
-              cd $(TF_WORKING_DIR)
               terraform validate -var-file=$(TFVARS_PATH)
             displayName: "Terraform Validate"
+            workingDirectory: $(TF_WORKING_DIR)
           
           - script: |
-              cd $(TF_WORKING_DIR)
               tflint --init
               tflint
             displayName: "TFlint Scanning"
+            workingDirectory: $(TF_WORKING_DIR)
 
           - script: |
-              cd $(TF_WORKING_DIR)
               terraform plan -var-file=$(TFVARS_PATH)
             displayName: "Terraform PLAN"
+            workingDirectory: $(TF_WORKING_DIR)
 
           - script: |
-              cd $(TF_WORKING_DIR)
               terraform apply -var-file=$(TFVARS_PATH)
               -- auto-approve
             displayName: "Terraform Apply with auto apptove"
+            workingDirectory: $(TF_WORKING_DIR)
             
 
 
