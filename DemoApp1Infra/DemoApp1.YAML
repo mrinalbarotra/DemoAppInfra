@@ -19,6 +19,7 @@ variables:
   TF_INPUT: "false"
   BASE_TFVARS_DIR: "/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Environments"
   TFVARS_PATH: "$(BASE_TFVARS_DIR)/${{parameters.environment}}/terraform.tfvars"
+  TF_WORKING_DIR: "$(Build.SourcesDirectory)/${{ parameters.environment }}"
 
 stages:
   - stage: terraform
