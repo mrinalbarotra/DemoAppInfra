@@ -5,63 +5,68 @@ trigger:
 
 parameters:
   - name: environment
-    displayName:
+    displayName: "Select Environment"
     type: string
     default: Dev
     values:
       - Dev
       - Prod
 
-pool:
-  name: default
+pool: default 
 
 variables:
-  TF_IN_AUTOMATION: "true"
+  TF_IN_Automation: "true"
   TF_INPUT: "false"
+  BASE_TFVARS_DIR: "/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Environments"
+  TFVARS_PATH: "$(BASE_TFVARS_DIR)/${{parameters.environment}}/terraform.tfvars"
 
 stages:
-  - stage: Terraform
+  - stage: terraform
     displayName: "Run the selected environment terraform code"
+
 
     jobs:
       - job: terraform
-        displayName: "Create resources as per the selected environment"
+        displayName: "Create the Azure resources"
 
         steps:
           - checkout: self
             clean: true
+        
           - script: |
-              if [ "${{ parameters.environment }}" = "Dev" ]; then
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/"
-                echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Dev/terraform.tfvars"
-              else
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/"
-                echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Prod/terraform.tfvars"
-              fi
-            displayName: "As per the selected environment setting agents working directory and path of terraform.tfvars"
-          - script: |
-              echo "Copying terraform.tfvars to working directory"
-              cp $(TFVARS_SOURCE) $(TF_WORKING_DIR)/terraform.tfvars
-              ls -l $(TF_WORKING_DIR)
-            displayName: "Copy terraform.tfvars into agents working directory"
+              cd $(TF_WORKING_DIR) 
+              terraform init -var-file=$(TFVAR_PATH)
+            displayName: "Terraform Init"
+
           - script: |
               cd $(TF_WORKING_DIR)
-              terraform init
-          - script: |
-              cd $(TF_WORKING_DIR)
-              terraform validate
+              terraform validate -var-file=$(TFVARS_PATH)
+            displayName: "Terraform Validate"
+          
           - script: |
               cd $(TF_WORKING_DIR)
               tflint --init
               tflint
+            displayName: "TFlint Scanning"
+
           - script: |
               cd $(TF_WORKING_DIR)
-              terraform plan \
-                -var-file="TFVARS_PATH" \
-                -out=tfplan
+              terraform plan -var-file=$(TFVARS_PATH)
+            displayName: "Terraform PLAN"
+
           - script: |
               cd $(TF_WORKING_DIR)
-              terraform apply \
-                -var-file="TFVARS_PATH" \
-                --auto-approve
-            displayName: "Terraform Apply"
+              terraform apply -var-file=$(TFVARS_PATH)
+              -- auto-approve
+            displayName: "Terraform Apply with auto apptove"
+            
+
+
+
+
+
+
+
+
+
+
