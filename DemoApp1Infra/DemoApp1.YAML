@@ -25,21 +25,22 @@ variables:
   TF_WORKING_DIR: "$(Build.SourcesDirectory)/${{ parameters.environment }}" #Define TF_WORKING_DIR as a pipeline variable
 
 stages:
-  - stage: Terraform
+  - stage: terraform
     displayName: "Run the selected environment terraform code"
+
 
     jobs:
       - job: terraform
-        displayName: "Create resources as per the selected environment"
+        displayName: "Create the Azure resources"
 
         steps:
-          - checkout: self #clone the directory/repo where tfvar is to the agents working directory"
-            clean: true #tells AzureDevops to clean the agents working directory before checkout, deleting old run data as working directory is reused"
-
+          - checkout: self
+            clean: true
+        
           - script: |
-              terraform init -var-file=$(TFVARS_PATH)
-            displayName: "Terraform init"
-            workingDirectory: $(TF_WORKING_DIR)
+              cd $(TF_WORKING_DIR) 
+              terraform init -var-file=$(TFVAR_PATH)
+            displayName: "Terraform Init"
 
           - script: |
               terraform validate -var-file=$(TFVARS_PATH)
@@ -50,15 +51,15 @@ stages:
               tflint --init
               tflint
             displayName: "Tflint scanning"
+
             workingDirectory: $(TF_WORKING_DIR)
 
           - script: |
               terraform plan -var-file=$(TFVARS_PATH)
-            displayName: "Terraform Plan"
+            displayName: "Terraform PLAN"
             workingDirectory: $(TF_WORKING_DIR)
 
           - script: |
-              terraform apply -var-file=$(TFVARS_PATH)
-                --auto-approve
+              terraform apply -var-file=$(TFVARS_PATH) --auto-approve
             displayName: "Terraform Apply"
             workingDirectory: $(TF_WORKING_DIR)
