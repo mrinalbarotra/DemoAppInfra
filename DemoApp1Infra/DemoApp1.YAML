@@ -1,11 +1,11 @@
 trigger:
-  branches:
+  branches: 
     include:
       - main
 
 parameters:
   - name: environment
-    displayName:
+    displayName: "Select Environment"
     type: string
     default: Dev
     values:
@@ -13,11 +13,16 @@ parameters:
       - Prod
 
 pool:
-  name: "Azure Pipelines"
+  name: "default"
 
 variables:
-  TF_IN_AUTOMATION: "true"
-  TF_INPUT: "false"
+  TF_IN_AUTOMATION: "true" #Tells Terraform that it is running in an automated environment (CI/CD)
+  TF_INPUT: "false"   #Disables interactive input prompts. Terraform will fail immediately if a variable value is missing
+  #terraform.tfvars path on agent
+  BASE_TFVARS_DIR: "/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Environments"
+  #part of terraform.tfvars folder path changing as per selected environment
+  TFVARS_PATH: "$(BASE_TFVARS_DIR)/${{ parameters.environment }}/terraform.tfvars" #${{}} compile time expression
+  TF_WORKING_DIR: "$(Build.SourcesDirectory)/${{ parameters.environment }}" #Define TF_WORKING_DIR as a pipeline variable
 
 stages:
   - stage: Terraform
@@ -28,40 +33,32 @@ stages:
         displayName: "Create resources as per the selected environment"
 
         steps:
-          - checkout: self
-            clean: true
+          - checkout: self #clone the directory/repo where tfvar is to the agents working directory"
+            clean: true #tells AzureDevops to clean the agents working directory before checkout, deleting old run data as working directory is reused"
+
           - script: |
-              if [ "${{ parameters.environment }}" = "Dev" ]; then
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/Dev"
-                echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Dev/terraform.tfvars"
-              else
-                echo "##vso[task.setvariable variable=TF_WORKING_DIR]$(Build.SourcesDirectory)/Prod"
-                echo "##vso[task.setvariable variable=TFVARS_SOURCE]/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Prod/terraform.tfvars"
-              fi
-            displayName: "Select environment folder and its corresponding terraform.tfvars from local computer"
-           - script: |
-              echo "Copying terraform.tfvars to working directory"
-              cp $(TFVARS_SOURCE) $(TF_WORKING_DIR)/terraform.tfvars
-              ls -l $(TF_WORKING_DIR)
-            displayName: "Copy terraform.tfvars"
+              terraform init -var-file=$(TFVARS_PATH)
+            displayName: "Terraform init"
+            workingDirectory: $(TF_WORKING_DIR)
+
           - script: |
-              cd $(TF_WORKING_DIR)
-              terraform init
+              terraform validate -var-file=$(TFVARS_PATH)
+            displayName: "Terraform Validate"
+            workingDirectory: $(TF_WORKING_DIR)
+
           - script: |
-              cd $(TF_WORKING_DIR)
-              terraform validate
-          - script: |
-              cd $(TF_WORKING_DIR)
               tflint --init
               tflint
+            displayName: "Tflint scanning"
+            workingDirectory: $(TF_WORKING_DIR)
+
           - script: |
-              cd $(TF_WORKING_DIR)
-              terraform plan \
-                -var-file="$(TFVARS_PATH)" \
-                -out=tfplan
+              terraform plan -var-file=$(TFVARS_PATH)
+            displayName: "Terraform Plan"
+            workingDirectory: $(TF_WORKING_DIR)
+
           - script: |
-              cd $(TF_WORKING_DIR)
-              terraform apply \
-                -var-file="$(TFVARS_PATH)" \
+              terraform apply -var-file=$(TFVARS_PATH)
                 --auto-approve
             displayName: "Terraform Apply"
+            workingDirectory: $(TF_WORKING_DIR)
