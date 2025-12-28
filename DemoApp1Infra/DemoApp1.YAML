@@ -16,14 +16,16 @@ pool:
   name: "default"
 
 variables:
-  TF_IN_AUTOMATION: "true" #Tells Terraform that it is running in an automated environment (CI/CD)
-  TF_INPUT: "false"   #Disables interactive input prompts. Terraform will fail immediately if a variable value is missing
-  #terraform.tfvars path on agent
+#Tells Terraform that it is running in an automated environment (CI/CD)
+  TF_IN_AUTOMATION: "true"
+#Disables interactive input prompts. Terraform will fail immediately if a variable value is missing
+  TF_INPUT: "false"
+#terraform.tfvars path on agent
   BASE_TFVARS_DIR: "/home/Mrinal/Documents/VSCode/Terraform/DemoApp/DemoApp1Infra/Environments"
-  #part of terraform.tfvars folder path changing as per selected environment
-  TFVARS_PATH: "$(BASE_TFVARS_DIR)/${{ parameters.environment }}/terraform.tfvars" #${{}} compile time expression
-  TF_WORKING_DIR: "$(Build.SourcesDirectory)/${{ parameters.environment }}" #Define TF_WORKING_DIR as a pipeline variable
-
+#part of terraform.tfvars folder path changing as per selected environment. ${{}} compile time expression
+  TFVARS_PATH: "$(BASE_TFVARS_DIR)/${{ parameters.environment }}/terraform.tfvars"
+#Define TF_WORKING_DIR as a pipeline variable
+  TF_WORKING_DIR: "$(Build.SourcesDirectory)/DemoApp1Infra/Environments/${{ parameters.environment }}"
 stages:
   - stage: terraform
     displayName: "Run the selected environment terraform code"
@@ -34,13 +36,13 @@ stages:
         displayName: "Create the Azure resources"
 
         steps:
-          - checkout: self
-            clean: true
-        
+          - checkout: self #Copy yaml dir to agents working dir
+            clean: true #Clean old files from agents working dir
+# cd $(TF_WORKING_DIR)         
           - script: |
-              cd $(TF_WORKING_DIR) 
               terraform init -var-file=$(TFVAR_PATH)
             displayName: "Terraform Init"
+            workingDirectory: $(TF_WORKING_DIR)
 
           - script: |
               terraform validate -var-file=$(TFVARS_PATH)
