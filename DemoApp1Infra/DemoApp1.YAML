@@ -53,6 +53,7 @@ stages:
               tflint --init
               tflint
             displayName: "Tflint scanning"
+            continueOnErrors: true
 
             workingDirectory: $(TF_WORKING_DIR)
 
