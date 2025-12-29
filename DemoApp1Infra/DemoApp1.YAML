@@ -40,12 +40,12 @@ stages:
             clean: true #Clean old files from agents working dir
 # cd $(TF_WORKING_DIR)         
           - script: |
-              terraform init -var-file=$(TFVAR_PATH)
+              terraform init
             displayName: "Terraform Init"
             workingDirectory: $(TF_WORKING_DIR)
 
           - script: |
-              terraform validate -var-file=$(TFVARS_PATH)
+              terraform validate
             displayName: "Terraform Validate"
             workingDirectory: $(TF_WORKING_DIR)
 
