@@ -27,7 +27,7 @@ locals {
 
       source_image_reference = {
         publisher = "Canonical"
-        offer     = "0001-com-ubuntu-server-focal"
+        offer     = "0001-com-ubuntu-server-focal-jammy"
         sku       = "22_04-lts"
         version   = "latest"
       }
@@ -61,7 +61,7 @@ EOF
 
       source_image_reference = {
         publisher = "Canonical"
-        offer     = "0001-com-ubuntu-server-focal"
+        offer     = "0001-com-ubuntu-server-jammy"
         sku       = "22_04-lts"
         version   = "latest"
       }
