@@ -66,3 +66,9 @@ stages:
               terraform apply -var-file=$(TFVARS_PATH) --auto-approve
             displayName: "Terraform Apply"
             workingDirectory: $(TF_WORKING_DIR)
+
+          - script: |
+              terraform destroy \ -var-file=terraform.tfvars \ --auto-approve
+            displayName: "Destroy All created resources"
+            workingDirectory: $(TF_WORKING_DIR)
+
