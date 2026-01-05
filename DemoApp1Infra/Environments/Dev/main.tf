@@ -48,7 +48,6 @@ module "nsgs" {
 
 }
 
-
 module "subnet_nsg_assoc" {
   depends_on = [module.nsgs, module.subnets]
   source     = "../../Modules/azurerm_subnet_nsg_association"

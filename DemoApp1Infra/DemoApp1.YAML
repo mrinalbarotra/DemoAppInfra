@@ -28,12 +28,57 @@ variables:
   TF_WORKING_DIR: "$(Build.SourcesDirectory)/DemoApp1Infra/Environments/${{ parameters.environment }}"
 stages:
   - stage: terraform
-    displayName: "Run the selected environment terraform code"
-
+    displayName: "Terraform Infra Pipeline"
 
     jobs:
+      - job: SonarQube-scan
+        displayName: "Code quality & security check"
+        steps:
+          - checkout: self
+            clean: true
+
+          #Authenticates to SonarQube
+          #Sets environment variables
+          #Writes sonar-scanner config
+          #Prepares the workspace
+          #No scanning happens here
+          - task: SonarQubePrepare@5 #@5 is for local sonarqube @8 for sonarqube cloud
+            displayName: "Prepare SonarQube Analysis"
+            inputs:
+              SonarQube: 'SonarQubeServiceConnection'
+              scannerMode: 'CLI'
+              configMode: 'manual'
+              cliProjectKey: 'terraform-infra'
+              cliSources: '$(TF_WORKING_DIR)'
+
+          # This task is literally the “RUN” button
+          - task: SonarQubeAnalyze@5
+            displayName: "Run SonarQube Analysis"
+
+          - task: SonarQubePublish@5
+            displayName: "Publish SonarQube Results"
+            inputs:
+              pollingTimeoutSec: '300'
+
+      - job: tflint
+        displayName: "Terraform best practices check SAST"
+        dependsOn: SonarQube-scan 
+
+        steps:
+          - checkout: self
+            clean: true
+
+          - script: |
+              tflint --init
+              tflint
+            displayName: "Run tflint"
+            continueOnError: true
+            workingDirectory: $(TF_WORKING_DIR)
+          
+
       - job: terraform
         displayName: "Create the Azure resources"
+        dependsOn: tflint
 
         steps:
           - checkout: self #Copy yaml dir to agents working dir
@@ -50,14 +95,6 @@ stages:
             workingDirectory: $(TF_WORKING_DIR)
 
           - script: |
-              tflint --init
-              tflint
-            displayName: "Tflint scanning"
-            continueOnError: true
-
-            workingDirectory: $(TF_WORKING_DIR)
-
-          - script: |
               terraform plan -var-file=$(TFVARS_PATH)
             displayName: "Terraform PLAN"
             workingDirectory: $(TF_WORKING_DIR)
@@ -67,8 +104,8 @@ stages:
             displayName: "Terraform Apply"
             workingDirectory: $(TF_WORKING_DIR)
 
-          - script: |
-              terraform destroy -var-file=$(TFVARS_PATH) --auto-approve
-            displayName: "Destroy All created resources"
-            workingDirectory: $(TF_WORKING_DIR)
+          # - script: |
+          #     terraform destroy -var-file=$(TFVARS_PATH) --auto-approve
+          #   displayName: "Destroy All created resources"
+          #   workingDirectory: $(TF_WORKING_DIR)
 
