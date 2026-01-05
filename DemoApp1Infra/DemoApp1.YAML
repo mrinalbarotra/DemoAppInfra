@@ -31,7 +31,7 @@ stages:
     displayName: "Terraform Infra Pipeline"
 
     jobs:
-      - job: SonarQube-scan
+      - job: SonarQube_Scan
         displayName: "Code quality & security check"
         steps:
           - checkout: self
