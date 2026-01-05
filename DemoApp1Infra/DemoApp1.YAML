@@ -71,7 +71,7 @@ stages:
 
       - job: tflint
         displayName: "Terraform best practices check SAST"
-        dependsOn: SonarQube-scan 
+        dependsOn: SonarQube_Scan 
 
         steps:
           - checkout: self
