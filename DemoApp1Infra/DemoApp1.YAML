@@ -37,16 +37,7 @@ stages:
           - checkout: self
             clean: true
 
-          - script: |
-              sonar-scanner \
-                -Dsonar.projectKey=terraform-infra \
-                -Dsonar.sources=. \
-                -Dsonar.host.url=http://localhost:9000
-            displayName: Running SonarQube_Scan
-            workingDirectory: $(TF_WORKING_DIR)
-
-
-          # #Authenticates to SonarQube
+                  # #Authenticates to SonarQube
           # #Sets environment variables
           # #Writes sonar-scanner config
           # #Prepares the workspace
@@ -68,6 +59,17 @@ stages:
           #   displayName: "Publish SonarQube Results"
           #   inputs:
           #     pollingTimeoutSec: '300'
+        
+          - script: |
+              sonar-scanner \
+                -Dsonar.projectKey=terraform-infra \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=http://localhost:9000
+            displayName: Running SonarQube_Scan
+            workingDirectory: $(TF_WORKING_DIR)
+
+
+
 
       - job: tflint
         displayName: "Terraform best practices check SAST"
