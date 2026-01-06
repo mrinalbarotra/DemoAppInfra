@@ -36,7 +36,8 @@ stages:
         condition: and(
           succeeded(),
           eq(variables['Build.SourceBranch'], 'refs/heads/main')
-          
+          )
+
         steps:
           - checkout: self
             clean: true
