@@ -32,44 +32,55 @@ stages:
 
     jobs:
       - job: SonarQube_Scan
-        displayName: "Code quality & security check"
-        condition: and(
-          succeeded(),
-          eq(variables['Build.SourceBranch'], 'refs/heads/main')
-          )
+        displayName: "Code quality & security check (SonarQube Community Ed)"
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+        # condition: and(
+        #   succeeded(),
+        #   eq(variables['Build.SourceBranch'], 'refs/heads/main')
+        #   )
 
-        variables:
-          SONARQUBE_SCANNER_PARAMS: '{}'
+        # variables:
+        #   SONARQUBE_SCANNER_PARAMS: '{}'
 
         steps:
           - checkout: self
             clean: true
+
+          - script: |
+              sonar-scanner \
+                -Dsonar.projectKey=terraform-infra \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=http://localhost:9000 \
+                -Dsonar.login=$(SONAR_TOKEN) \
+                -Dsonar.language=terraform \
+                -Dsonar.terraform.provider.azure.enabled=true
+            displayName: "Run SonarQube Scan (CLI)"
 
           # #Authenticates to SonarQube
           # #Sets environment variables
           # #Writes sonar-scanner config
           # #Prepares the workspace
           # #No scanning happens here
-          - task: SonarQubePrepare@8
-            displayName: "Prepare SonarQube Analysis"
-            inputs:
-              SonarQube: 'SonarQubeServiceConnection'
-              scannerMode: 'CLI'
-              configMode: 'manual'
-              cliProjectKey: 'terraform-infra'
-              cliSources: "."
-              extraProperties: |
-                sonar.language=terraform
-                sonar.terraform.provider.azure.enabled=true
+          # - task: SonarQubePrepare@8
+          #   displayName: "Prepare SonarQube Analysis"
+          #   inputs:
+          #     SonarQube: 'SonarQubeServiceConnection'
+          #     scannerMode: 'CLI'
+          #     configMode: 'manual'
+          #     cliProjectKey: 'terraform-infra'
+          #     cliSources: "."
+          #     extraProperties: |
+          #       sonar.language=terraform
+          #       sonar.terraform.provider.azure.enabled=true
 
-          # This task is literally the “RUN” button
-          - task: SonarQubeAnalyze@8
-            displayName: "Run SonarQube Analysis"
+          # # This task is literally the “RUN” button
+          # - task: SonarQubeAnalyze@8
+          #   displayName: "Run SonarQube Analysis"
 
-          - task: SonarQubePublish@8
-            displayName: "Publish SonarQube Results"
-            inputs:
-              pollingTimeoutSec: '300'
+          # - task: SonarQubePublish@8
+          #   displayName: "Publish SonarQube Results"
+          #   inputs:
+          #     pollingTimeoutSec: '300'
         
           # - script: |
           #     sonar-scanner \
