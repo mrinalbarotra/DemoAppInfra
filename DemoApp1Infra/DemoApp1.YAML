@@ -38,6 +38,9 @@ stages:
           eq(variables['Build.SourceBranch'], 'refs/heads/main')
           )
 
+        variables:
+          SONARQUBE_SCANNER_PARAMS: '{}'
+
         steps:
           - checkout: self
             clean: true
