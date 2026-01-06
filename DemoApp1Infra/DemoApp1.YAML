@@ -33,7 +33,10 @@ stages:
     jobs:
       - job: SonarQube_Scan
         displayName: "Code quality & security check"
-        condition: eq(variables['Build.SourceBranchName'], 'main')
+        condition: and(
+          succeeded(),
+          eq(variables['Build.SourceBranch'], 'refs/heads/main')
+        )
         steps:
           - checkout: self
             clean: true
@@ -53,6 +56,7 @@ stages:
               cliSources: "."
               extraProperties: |
                 sonar.language=terraform
+                sonar.terraform.provider.azure.enabled=true
 
           # This task is literally the “RUN” button
           - task: SonarQubeAnalyze@8
