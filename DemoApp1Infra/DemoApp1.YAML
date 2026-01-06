@@ -42,7 +42,7 @@ stages:
           # #Writes sonar-scanner config
           # #Prepares the workspace
           # #No scanning happens here
-          - task: SonarQubePrepare@5 #@5 is for local sonarqube @8 for sonarqube cloud
+          - task: SonarQubePrepare@8
             displayName: "Prepare SonarQube Analysis"
             inputs:
               SonarQube: 'SonarQubeServiceConnection'
@@ -52,10 +52,10 @@ stages:
               cliSources: '$(TF_WORKING_DIR)'
 
           # This task is literally the “RUN” button
-          - task: SonarQubeAnalyze@5
+          - task: SonarQubeAnalyze@8
             displayName: "Run SonarQube Analysis"
 
-          - task: SonarQubePublish@5
+          - task: SonarQubePublish@8
             displayName: "Publish SonarQube Results"
             inputs:
               pollingTimeoutSec: '300'
