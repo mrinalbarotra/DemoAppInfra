@@ -114,7 +114,7 @@ module "bastion" {
   resource_group_name  = "dev-demoapp1-centralindia-rg1"
   location             = "centralindia"
   ipconfigname         = "bastionipconfig"
-  subnet_id            = module.subnets.subnet_ids["subnet2"]
+  subnet_id            = module.subnets.subnet_ids["subnetbastion"]
   public_ip_address_id = module.pip["pip2"].public_ip_id #module.pip.public_ip_ids["pip2"]
   tags                 = local.common_tags
 
