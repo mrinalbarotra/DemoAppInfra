@@ -1,35 +1,35 @@
 variable "rgs" {
   description = "Map of resource groups to create"
   type = map(object({
-    name        = string
-    location    = string
+    name     = string
+    location = string
   }))
 }
 
 variable "vnets" {
-    description = "map of virtual networks to create"
-    type = map(object({
-        name = string
-        resource_group_name = string
-        location = string
-        address_space = list(string)
-    }))
+  description = "map of virtual networks to create"
+  type = map(object({
+    name                = string
+    resource_group_name = string
+    location            = string
+    address_space       = list(string)
+  }))
 
 }
 
 variable "mssqlservers" {
-    description = ",map of mssqlservers"
-    type = map(object({
-      name = string
-      resource_group_name= string
-      location = string
-      version = string
-      minimum_tls_version = string
-      azuread_administrator = object({
-        login_username = string
-        ad_group_name = string
-      })
-    })) 
+  description = ",map of mssqlservers"
+  type = map(object({
+    name                = string
+    resource_group_name = string
+    location            = string
+    version             = string
+    minimum_tls_version = string
+    azuread_administrator = object({
+      login_username = string
+      ad_group_name  = string
+    })
+  }))
 }
 
 variable "subnets" {
@@ -39,28 +39,28 @@ variable "subnets" {
     resource_group_name  = string
     virtual_network_name = string
     address_prefixes     = list(string)
-      }))
+  }))
 }
 
 variable "nsgs" {
   description = "Map of Nsgs with their rules"
   type = map(object({
-    name                       = string
-    resource_group_name        = string
-    location                   = string
+    name                = string
+    resource_group_name = string
+    location            = string
     security_rules = list(object({
-        name                       = string
-        priority                   = number
-        direction                  = string
-        access                     = string
-        protocol                   = string
-        source_port_range          = string
-        destination_port_range     = string
-        source_address_prefix      = string
-        destination_address_prefix = string
+      name                       = string
+      priority                   = number
+      direction                  = string
+      access                     = string
+      protocol                   = string
+      source_port_range          = string
+      destination_port_range     = string
+      source_address_prefix      = string
+      destination_address_prefix = string
 
 
-    }))             
+    }))
 
 
   }))
@@ -85,6 +85,29 @@ variable "pips" {
     resource_group_name = string
     location            = string
     sku                 = string #Basic or Standard
+  }))
+}
+
+variable "kvs" {
+  type = map(object({
+    name                       = string
+    location                   = string
+    resource_group_name        = string
+    tenant_id                  = string
+    sku_name                   = string
+    purge_protection_enabled   = bool
+    soft_delete_retention_days = number
+
+    access_policy = map(object({
+      tenant_id           = string
+      object_id           = string
+      key_permissions     = list(string)
+      storage_permissions = list(string)
+      secret_permissions  = list(string)
+
+    }))
+
+
   }))
 }
 
