@@ -1,10 +1,17 @@
-variable "pips" {
-  type = map(object({
-    name                = string
-    resource_group_name = string
-    location            = string
-    sku                 = string #Basic or Standard
-  }))
+variable "name" {
+  type = string
+}
+
+variable "resource_group_name" {
+  type = string
+}
+
+variable "location" {
+  type = string
+}
+
+variable "sku" {
+  type = string
 }
 
 variable "tags" {

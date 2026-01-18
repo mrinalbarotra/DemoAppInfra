@@ -96,10 +96,15 @@ module "mssqldatabase" {
 }
 
 module "pip" {
-  depends_on = [module.rgs]
-  source     = "../../Modules/azurerm_pip"
-  pips       = var.pips
-  tags       = local.common_tags
+  depends_on          = [module.rgs]
+  for_each            = var.pips
+  source              = "../../Modules/azurerm_pip"
+  name                = each.value.name
+  resource_group_name = each.value.resource_group_name
+  location            = each.value.location
+  sku                 = each.value.sku
+
+  tags = local.common_tags
 
 }
 
@@ -111,7 +116,7 @@ module "bastion" {
   location             = "centralindia"
   ipconfigname         = "bastionipconfig"
   subnet_id            = module.subnets.subnet_ids["subnet2"]
-  public_ip_address_id = module.pip.public_ip_ids["pip2"]
+  public_ip_address_id = module.pip["pip2"].public_ip_id  #module.pip.public_ip_ids["pip2"]
   tags                 = local.common_tags
 
 }

@@ -1,3 +1,8 @@
+output "public_ip_id" {
+  value = azurerm_public_ip.pip.id
+}
+
+
 # output "public_ip_ids" {
 #   description = "Map of Public IP addresses"
 #   value = {
@@ -6,9 +11,9 @@
 #   }
 # }
 
-output "public_ip_ids" {
-  value = {
-    for k, v in azurerm_public_ip.pip :
-    k => v.id
-  }
-}
+# output "public_ip_ids" {
+#   value = {
+#     for k, v in azurerm_public_ip.pip :
+#     k => v.id
+#   }
+# }
