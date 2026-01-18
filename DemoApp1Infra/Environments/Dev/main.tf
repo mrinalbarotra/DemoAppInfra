@@ -5,14 +5,13 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">= 2.0"
     }
+
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">=2.0"
+    }
   }
 }
-
-# Provider Block
-provider "azurerm" {
-  features {}
-}
-
 # plugin "azurerm" {
 #   enabled = true
 #   version = "0.26.0"
@@ -116,7 +115,7 @@ module "bastion" {
   location             = "centralindia"
   ipconfigname         = "bastionipconfig"
   subnet_id            = module.subnets.subnet_ids["subnet2"]
-  public_ip_address_id = module.pip["pip2"].public_ip_id  #module.pip.public_ip_ids["pip2"]
+  public_ip_address_id = module.pip["pip2"].public_ip_id #module.pip.public_ip_ids["pip2"]
   tags                 = local.common_tags
 
 }

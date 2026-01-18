@@ -13,7 +13,7 @@ locals {
       size                = "Standard_B2s"
       admin_username      = "azureuser"
       subnet_id           = module.subnets.subnet_ids["subnet1"]
-      public_ip_id        = module.pip["pip1"].public_ip_id  #module.pip.public_ip_ids["pip1"]
+      public_ip_id        = module.pip["pip1"].public_ip_id #module.pip.public_ip_ids["pip1"]
 
       admin_ssh_key = {
         username   = "azureuser"
