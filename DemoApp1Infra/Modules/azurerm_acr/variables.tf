@@ -1,13 +1,27 @@
-variable "acrs" {
-    type = map(object({
-      name = string
-    resource_group_name = string
-    location = string
-    sku = string
-    georeplications = optional(list(object({
-        location = string
-        zone_redundancy_enabled = bool
-        tags = optional(map(string()),{})
-    })),[])
-    })) 
+variable "name" {
+  type = string
+}
+
+variable "resource_group_name" {
+  type = string
+}
+
+variable "location" {
+  type = string
+}
+
+variable "sku" {
+  type = string
+}
+
+# variable "georeplications_location" {
+#   type = string
+# }
+
+# variable "zone_redundancy_enabled" {
+#   type = bool
+# }
+
+variable "tags" {
+  type = map(string)
 }
